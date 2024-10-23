@@ -11,7 +11,7 @@ mp_face_mesh = mp.solutions.face_mesh
 LEFT_IRIS = [474,475, 476, 477]
 RIGHT_IRIS = [469, 470, 471, 472]
 
-shared_data = { "x" : -1, "y" : -1}
+shared_data = { "x" : -1, "y" : -1, "click" : False}
 
 # Cria uma condição que combina o lock com uma maneira de notificar threads
 condition = threading.Condition()
@@ -49,7 +49,9 @@ def write_data():
                     center_right = np.array([r_cx, r_cy], dtype=np.int32)
                     
                     with condition:
-                        shared_data["x"], shared_data["y"] = center_left[0], center_left[1]
+                        shared_data["x"], shared_data["y"] = (center_left[0] + center_right[0]) / 2.0, (center_left[1] + center_right[1]) / 2.0
+                        # heuristica do olho
+                        
                         condition.notify_all()
 
             cv2.imshow('MediaPipe Face Mesh', cv2.flip(image, 1))
